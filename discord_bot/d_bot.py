@@ -66,6 +66,7 @@ async def on_ready():
     channel = client.get_channel(921144365299150919)
     await channel.send("Connected to bot-commands!")
 
+
 @client.event
 async def on_member_join(member):
     await member.create_dm()
@@ -86,7 +87,18 @@ async def on_message(message):
     # so bot doesnt respond to self
     if message.author == client.user:
         return
-    
+
+    # Close Client
+    if username == "Rickyg3" and user_message.lower() == "!quit":
+        print(f"Logging off of {client.user}")
+        channel = client.get_channel(921144365299150919)
+        await channel.send("Disconnected from bot-commands!")
+        await client.close()
+        return
+        # client.logout()
+
+
+    # general Channel
     if channel == 'general':
         if user_message.lower() in greeter.valid_triggers:
             new_greeting = greeter.random()
@@ -103,6 +115,7 @@ async def on_message(message):
             await message.channel.send(response)
             return
 
+    # Bot Test Channel
     if channel == 'bot_test':
         # Break down input
         base_input = user_message
@@ -133,8 +146,7 @@ async def on_message(message):
                 await message.channel.send(f"added: {input_item}!")
                 return
         
-        
-
+    # Applies anywhere
     if user_message.lower() == "!anywhere":
         await message.channel.send("This can be used anywhere!")
         return
@@ -142,7 +154,12 @@ async def on_message(message):
  
 def main():
     # Start Discord Client
-    client.run(token)
+    try:
+        client.run(token)
+    except KeyboardInterrupt:
+        client.close()
+    finally:
+        print("Connection Closed")
 
 if __name__ == "__main__":
     main()
